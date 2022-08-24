@@ -1,36 +1,53 @@
 import type { NextPage } from "next"
 import Image from "next/image"
-import { useMoralisQuery } from "react-moralis"
+import { useMoralisQuery, useMoralis } from "react-moralis"
 import styles from "../styles/Home.module.css"
-
+import NftBox from "../components/NftBox"
 const Home: NextPage = () => {
+  const { isWeb3Enabled } = useMoralis()
   const { data: listedNfts, isFetching: isfetchingListedNfts } =
     useMoralisQuery("ActiveItem", (query) =>
       query.limit(10).descending("tokenId")
     )
 
-  console.log(listedNfts)
-
   return (
-    <div className={styles.container}>
-      {isfetchingListedNfts ? (
-        <div>Loading Nft...</div>
-      ) : (
-        <div>
-          {listedNfts.map((nft) => {
-            const { marketplaceAddress, nftAddress, price, tokenId, seller } =
-              nft.attributes
-            return (
-              <div className="p-4">
-                <p className="text-xl">{`MarketPlace address: ${marketplaceAddress}`}</p>
-                <p className="text-xl">{`nft Address: ${nftAddress}`}</p>
-                <p className="text-xl">{`price: ${price}`}</p>
-                <p className="text-xl">{`tokenId: ${tokenId}`}</p>
-              </div>
-            )
-          })}
-        </div>
-      )}
+    <div className="container mx-auto">
+      <h1 className="p-4 font-bold text-2xl">Recently Added</h1>
+      <div className="flex flex-wrap">
+        {isWeb3Enabled ? (
+          isfetchingListedNfts ? (
+            <div>Loading Nft...</div>
+          ) : (
+            <div>
+              {listedNfts.map((nft) => {
+                const {
+                  marketplaceAddress,
+                  nftAddress,
+                  price,
+                  tokenId,
+                  seller,
+                } = nft.attributes
+                return (
+                  <div className="p-4">
+                    <NftBox
+                      marketplaceAddress={marketplaceAddress}
+                      nftAddress={nftAddress}
+                      price={price}
+                      tokenId={tokenId}
+                      seller={seller}
+                      key={`${nftAddress}${tokenId}`}
+                    />
+                  </div>
+                )
+              })}
+            </div>
+          )
+        ) : (
+          <div className="text-center font-bold text-3xl">
+            Please connect to Wallet
+          </div>
+        )}
+      </div>
     </div>
   )
 }
