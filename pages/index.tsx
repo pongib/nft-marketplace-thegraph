@@ -28,6 +28,7 @@ const Home: NextPage = () => {
                   seller,
                 } = nft.attributes
                 console.log("nftAddress from query", nftAddress)
+                console.log("marketplaceAddress from query", marketplaceAddress)
 
                 return (
                   <div className="p-4">

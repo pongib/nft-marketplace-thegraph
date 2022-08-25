@@ -99,6 +99,7 @@ const NftBox = ({
           <UpdateLisingModal
             nftAddress={nftAddress}
             tokenId={tokenId}
+            marketplaceAddress={marketplaceAddress}
             isVisible={showModal}
             onClose={handleCloseModal}
           ></UpdateLisingModal>
