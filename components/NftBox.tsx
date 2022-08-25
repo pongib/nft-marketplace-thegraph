@@ -78,7 +78,6 @@ const NftBox = ({
   }
 
   useEffect(() => {
-    console.log("isWeb3Enabled", isWeb3Enabled)
     if (isWeb3Enabled) {
       updateUI()
     }

@@ -1,6 +1,6 @@
 import { ChangeEvent, useState } from "react"
 import { useWeb3Contract } from "react-moralis"
-import { Modal, Input } from "web3uikit"
+import { Modal, Input, useNotification } from "web3uikit"
 import { NftMarketplaceAbi } from "../constants"
 import { ethers } from "ethers"
 interface UpdateList {
@@ -18,8 +18,6 @@ const UpdateLisingModal = ({
   isVisible,
   onClose,
 }: UpdateList) => {
-  console.log("nftMarketplaceAddress", marketplaceAddress)
-
   const [newPrice, setNewPrice] = useState("0")
   const { runContractFunction: updateListing } = useWeb3Contract({
     contractAddress: marketplaceAddress,
@@ -31,6 +29,20 @@ const UpdateLisingModal = ({
       newPrice: ethers.utils.parseEther(newPrice),
     },
   })
+  const dispatch = useNotification()
+
+  async function handleUpdateListingSuccess(tx: any) {
+    const result = await tx.wait(1)
+    dispatch({
+      type: "success",
+      message: `Listing updated on tx ${result.transactionHash}`,
+      title: "Listing updated - please refresh and move some blocks",
+      position: "topR",
+    })
+    // reset
+    onClose()
+    setNewPrice("0")
+  }
 
   return (
     <Modal
@@ -45,6 +57,7 @@ const UpdateLisingModal = ({
           onError: (error) => {
             console.log(error)
           },
+          onSuccess: handleUpdateListingSuccess,
         })
       }}
     >
