@@ -4,6 +4,7 @@ import { BasicNftAbi, NftMarketplaceAbi, ContractAddress } from "../constants"
 import { Card } from "web3uikit"
 import Image from "next/image"
 import { ethers } from "ethers"
+import UpdateLisingModal from "./UpdateListingModal"
 
 interface ContractNftMarketplace {
   price: string
@@ -39,6 +40,7 @@ const NftBox = ({
   const [imageURL, setImageURL] = useState("")
   const [nftName, setNftName] = useState("")
   const [nftDescription, setNftDescription] = useState("")
+  const [showModal, setShowModal] = useState(false)
 
   const isOwnByYou = seller == account || seller == undefined
   const displayTextOwner = isOwnByYou ? "you" : truncateStr(seller || "", 15)
@@ -82,11 +84,29 @@ const NftBox = ({
     }
   }, [isWeb3Enabled])
 
+  function handleShowModal() {
+    isOwnByYou ? setShowModal(true) : console.log("Go to buy")
+  }
+
+  function handleCloseModal() {
+    setShowModal(false)
+  }
+
   return (
     <div>
       {imageURL ? (
         <div>
-          <Card title={nftName} description={nftDescription}>
+          <UpdateLisingModal
+            nftAddress={nftAddress}
+            tokenId={tokenId}
+            isVisible={showModal}
+            onClose={handleCloseModal}
+          ></UpdateLisingModal>
+          <Card
+            title={nftName}
+            description={nftDescription}
+            onClick={handleShowModal}
+          >
             <div className="p-2">
               <div className="flex flex-col items-end gap-2">
                 <div>#{tokenId}</div>

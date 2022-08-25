@@ -13,7 +13,7 @@ function MyApp({ Component, pageProps }: AppProps) {
       <Head>
         <title>NFT Marketplace</title>
         <meta name="description" content="NFT Marketplace use with Moralis" />
-        <link rel="icon" href="/favicon.ico" />
+        <link rel="icon" href="/vercel.svg" />
       </Head>
       <MoralisProvider serverUrl={serverUrlMoralis} appId={appIdMoralis}>
         <Header />

@@ -12,7 +12,7 @@ const Home: NextPage = () => {
 
   return (
     <div className="container mx-auto">
-      <h1 className="p-4 font-bold text-2xl">Recently Added</h1>
+      <h1 className="px-4 py-4 font-bold text-2xl">Recently Added</h1>
       <div className="flex flex-wrap">
         {isWeb3Enabled ? (
           isfetchingListedNfts ? (
@@ -27,6 +27,8 @@ const Home: NextPage = () => {
                   tokenId,
                   seller,
                 } = nft.attributes
+                console.log("nftAddress from query", nftAddress)
+
                 return (
                   <div className="p-4">
                     <NftBox
