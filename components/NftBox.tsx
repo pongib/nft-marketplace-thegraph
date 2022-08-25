@@ -62,6 +62,7 @@ const NftBox = ({
       nftAddress,
       tokenId,
     },
+    msgValue: price,
   })
 
   async function updateUI() {
