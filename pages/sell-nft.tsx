@@ -1,8 +1,9 @@
 import type { NextPage } from "next"
-import { Form, useNotification } from "web3uikit"
-import { ethers } from "ethers"
+import { Form, useNotification, Button } from "web3uikit"
+import { ethers, BigNumber } from "ethers"
 import { BasicNftAbi, ContractAddress, NftMarketplaceAbi } from "../constants"
 import { useMoralis, useWeb3Contract } from "react-moralis"
+import { useEffect, useState } from "react"
 
 interface NetworkConfigItem {
   NftMarketplace: string[]
@@ -14,7 +15,10 @@ interface NetworkConfigMap {
 
 const SellNft: NextPage = () => {
   const dispatch = useNotification()
-  const { chainId } = useMoralis()
+  const { chainId, account, isWeb3Enabled } = useMoralis()
+  const [isHaveFund, setIsHaveFund] = useState(false)
+  const [sellerFund, setSellerFund] = useState("0")
+
   // hex format for chainId
   const chainIdString = chainId ? parseInt(chainId).toString() : "31337"
   const marketplaceAddress = (ContractAddress as NetworkConfigMap)[
@@ -29,7 +33,6 @@ const SellNft: NextPage = () => {
     const nftAddress = data.data[0].inputResult
     const tokenId = data.data[1].inputResult
     const price = ethers.utils.parseEther(data.data[2].inputResult).toString()
-    console.log("price", price)
 
     const approveOptions = {
       abi: BasicNftAbi,
@@ -94,6 +97,62 @@ const SellNft: NextPage = () => {
     })
   }
 
+  async function getSellerFund() {
+    const getSellerOptions = {
+      abi: NftMarketplaceAbi,
+      contractAddress: marketplaceAddress,
+      functionName: "getSellerFund",
+      params: {
+        seller: account,
+      },
+    }
+
+    const fund = (await runContractFunction({
+      params: getSellerOptions,
+      onError: (error) => {
+        console.log(error)
+      },
+    })) as BigNumber
+
+    if (fund) {
+      setIsHaveFund(fund.gt(0))
+      setSellerFund(ethers.utils.formatEther(fund))
+    }
+  }
+
+  useEffect(() => {
+    if (isWeb3Enabled) {
+      getSellerFund()
+    }
+  }, [isHaveFund, isWeb3Enabled, account, chainId])
+
+  async function handleWithdrawSuccess(tx: any) {
+    const receipt = await tx.wait()
+    dispatch({
+      type: "success",
+      title: "Withdraw success",
+      message: `Withdraw success with tx ${receipt.transactionHash}`,
+      position: "topL",
+    })
+    // setIsHaveFund(false)
+  }
+
+  async function handleWithdraw() {
+    const options = {
+      abi: NftMarketplaceAbi,
+      contractAddress: marketplaceAddress,
+      functionName: "withdrawSellerFund",
+    }
+
+    await runContractFunction({
+      params: options,
+      onError: (error) => {
+        console.log(error)
+      },
+      onSuccess: handleWithdrawSuccess,
+    })
+  }
+
   return (
     <div>
       <Form
@@ -122,6 +181,24 @@ const SellNft: NextPage = () => {
         id="Main Form"
         onSubmit={approvedAndList}
       />
+      <div className="py-4">
+        <div className="flex flex-col gap-2 justify-items-center w-fit">
+          <h1 className="text-2xl">Withdraw sale fund: {sellerFund} ETH</h1>
+          {isHaveFund ? (
+            <div>
+              <Button
+                id="withdraw-proceeds"
+                onClick={handleWithdraw}
+                text="Withdraw"
+                theme="primary"
+                type="button"
+              />
+            </div>
+          ) : (
+            <div>No withdraw detect</div>
+          )}
+        </div>
+      </div>
     </div>
   )
 }
