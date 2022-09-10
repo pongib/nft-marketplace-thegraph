@@ -1,8 +1,9 @@
 import { ChangeEvent, useState } from "react"
 import { useWeb3Contract } from "react-moralis"
-import { Modal, Input, useNotification } from "web3uikit"
+import { Modal, Input, useNotification, Loading } from "web3uikit"
 import { NftMarketplaceAbi } from "../constants"
 import { ethers } from "ethers"
+
 interface UpdateList {
   nftAddress: string
   tokenId: string
@@ -26,7 +27,7 @@ const UpdateLisingModal = ({
     params: {
       nftAddress,
       tokenId,
-      newPrice: ethers.utils.parseEther(newPrice),
+      newPrice: ethers.utils.parseEther(newPrice || "0"),
     },
   })
   const dispatch = useNotification()
@@ -44,6 +45,8 @@ const UpdateLisingModal = ({
     setNewPrice("0")
   }
 
+  async function handleUpdateListingComplete() {}
+
   return (
     <Modal
       isVisible={isVisible}
@@ -57,6 +60,7 @@ const UpdateLisingModal = ({
           onError: (error) => {
             console.log(error)
           },
+          // onComplete:
           onSuccess: handleUpdateListingSuccess,
         })
       }}

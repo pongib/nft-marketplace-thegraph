@@ -66,9 +66,8 @@ const NftBox = ({
   })
 
   async function updateUI() {
-    console.log("update UI")
     const tokenURI = (await getTokenURI()) as string
-    console.log("tokenURI", tokenURI)
+
     if (tokenURI) {
       // convert IPFS to normal HTTPS
       const requestURL = tokenURI.replace(

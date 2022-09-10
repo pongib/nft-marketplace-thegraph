@@ -7,10 +7,13 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
+    "build:static": "next build && next export",
     "moralis:sync": "moralis-admin-cli connect-local-devchain --chain hardhat --moralisSubdomain zqazyydg5ncs.usemoralis.com --frpcPath ./frp/frpc.exe",
     "moralis:cloud": "moralis-admin-cli watch-cloud-folder --moralisSubdomain zqazyydg5ncs.usemoralis.com --autoSave 1 --moralisCloudfolder ./cloudFunctions"
   },
   "dependencies": {
+    "@apollo/client": "^3.6.9",
+    "graphql": "^16.6.0",
     "magic-sdk": "^9.0.0",
     "moralis": "^1.5.11",
     "next": "12.1.5",
